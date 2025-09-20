@@ -24,17 +24,49 @@
 
 #pragma endregion LICENSE
 
-#ifndef CHAT_C
-    #define CHAT_C
+#pragma once
 
-#include "chat.h"
+#ifndef CHAT_H
+    #define CHAT_H
 
-int main(int argc, char* argv[])
+#ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #define NOMINMAX
+    #define UNICODE
+    #define _UNICODE
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #include <windows.h>
+#else
+    #define __STDC_LIMIT_MACROS
+    #define __STDC_FORMAT_MACROS
+    #define __STDC_CONSTANT_MACROS
+    #define __STDC_WANT_LIB_EXT1__
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+    #include <unistd.h>
+#endif
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <stdbool.h>
+#include <ctype.h>
+
+typedef struct message_t
 {
-    message_t* message = create_message("Rohan", "Hello, world!");
-    print_message(message);
-    free_message(message);
-    return 0;
-}
+    char* sender;
+    char* message;
+    char* timestamp;
+} __attribute__((__packed__)) message_t;
+
+message_t* create_message(char* sender, char* message);
+void print_message(message_t* msg);
+void free_message(message_t* msg);
 
 #endif

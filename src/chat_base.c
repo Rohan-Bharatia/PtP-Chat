@@ -24,17 +24,42 @@
 
 #pragma endregion LICENSE
 
-#ifndef CHAT_C
-    #define CHAT_C
+#ifndef CHAT_BASE_C
+    #define CHAT_BASE_C
 
 #include "chat.h"
 
-int main(int argc, char* argv[])
+static char* strdup(const char* s)
 {
-    message_t* message = create_message("Rohan", "Hello, world!");
-    print_message(message);
-    free_message(message);
-    return 0;
+    size_t len = strlen(s) + 1;
+    char* dup  = malloc(len);
+    if (dup != NULL)
+        memcpy(dup, s, len);
+    return dup;
+}
+
+message_t* create_message(char* sender, char* message)
+{
+    time_t now = time(NULL);
+    char* timestamp = malloc(sizeof(char) * 32);
+    strftime(timestamp, sizeof(char) * 32, "%Y-%m-%d %H:%M:%S", localtime(&now));
+
+    message_t* msg = malloc(sizeof(message_t));
+    msg->sender    = strdup(sender);
+    msg->message   = strdup(message);
+    msg->timestamp = timestamp;
+    return msg;
+}
+
+void print_message(message_t* msg)
+{
+    printf("%s - %s:\n%s\n", msg->sender, msg->timestamp, msg->message);
+}
+
+void free_message(message_t* msg)
+{
+    free(msg->timestamp);
+    free(msg);
 }
 
 #endif
