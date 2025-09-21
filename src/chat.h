@@ -37,6 +37,9 @@
     #include <winsock2.h>
     #include <ws2tcpip.h>
     #include <windows.h>
+    typedef SOCKET socket_t;
+    #define close_socket closesocket
+    #pragma comment(lib, "ws2_32.lib")
 #else
     #define __STDC_LIMIT_MACROS
     #define __STDC_FORMAT_MACROS
@@ -48,15 +51,22 @@
     #include <arpa/inet.h>
     #include <netdb.h>
     #include <unistd.h>
+    typedef int socket_t;
+    #define INVALID_SOCKET (-1)
+    #define SOCKET_ERROR (-1)
+    #define close_socket close
+    #pragma comment(lib, "pthread")
 #endif
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <time.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <errno.h>
 
 typedef struct message_t
 {
@@ -65,7 +75,7 @@ typedef struct message_t
     char* timestamp;
 } __attribute__((__packed__)) message_t;
 
-message_t* create_message(char* sender, char* message);
+message_t* create_message(const char* sender, const char* msg);
 void print_message(message_t* msg);
 void free_message(message_t* msg);
 
