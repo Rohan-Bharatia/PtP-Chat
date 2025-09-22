@@ -23,13 +23,7 @@ if %errorlevel% eq 0 (
     exit /b 1
 )
 
-call build\bin\PtP_Chat.exe
-if %errorlevel% eq 0 (
-    @echo [+] Running chat
-) else (
-    @echo [-] Running chat failed
-    exit /b 1
-)
+copy build\bin\PtP_Chat.exe PtP_Chat.exe
 
 @echo [+] Done!
 

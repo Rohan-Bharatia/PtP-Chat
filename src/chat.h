@@ -29,6 +29,8 @@
 #ifndef CHAT_H
     #define CHAT_H
 
+#define _POSIX_C_SOURCE 200112L
+#define _XOPEN_SOURCE 600
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #define NOMINMAX
@@ -55,9 +57,7 @@
     #define INVALID_SOCKET (-1)
     #define SOCKET_ERROR (-1)
     #define close_socket close
-    #pragma comment(lib, "pthread")
 #endif
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,8 +75,16 @@ typedef struct message_t
     char* timestamp;
 } __attribute__((__packed__)) message_t;
 
-message_t* create_message(const char* sender, const char* msg);
+message_t* create_message(char* sender, char* msg);
 void print_message(message_t* msg);
 void free_message(message_t* msg);
+int init_sockets(void);
+void cleanup_sockets(void);
+socket_t tcp_connect(const char* host, const char* port);
+socket_t tcp_listen_accept(const char* port);
+ssize_t send_all(socket_t sock, const void* buffer, size_t len);
+ssize_t recv_all(socket_t sock, void* buffer, size_t len);
+bool send_message(socket_t sock, message_t* msg);
+message_t* recv_message(socket_t sock);
 
 #endif

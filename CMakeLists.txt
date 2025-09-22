@@ -13,13 +13,6 @@ file(GLOB PtP_Sources
 
 add_executable(PtP_Chat ${PtP_Sources})
 
-if(WIN32)
-	target_link_libraries(PtP_Chat ws2_32)
-else()
-    target_link_libraries(PtP_Chat pthread)
-endif()
-target_link_libraries(PtP_Chat m)
-
 target_include_directories(PtP_Chat PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set_target_properties(PtP_Chat PROPERTIES
