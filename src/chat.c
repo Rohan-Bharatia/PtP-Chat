@@ -29,6 +29,15 @@
 
 #include "chat.h"
 
+void clear_screen(void)
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
 message_t* create_message(char* sender, char* message)
 {
     if (!sender || !message) return NULL;
@@ -361,6 +370,40 @@ message_t* recv_message(socket_t s)
     msg->message = m_buf;
     msg->timestamp = t_buf;
     return msg;
+}
+
+thread_t recv_thread(void* arg)
+{
+    chat_ctx_t* ctx = (chat_ctx_t*)arg;
+
+    while (true)
+    {
+        message_t* msg = recv_message(ctx->sock);
+
+        if (!msg)
+        {
+            fprintf(stderr, "Connection closed\n");
+            break;
+        }
+
+        printf("\n");
+        print_message(msg);
+        free_message(msg);
+        printf("> ");
+        fflush(stdout);
+    }
+
+    return 0;
+}
+
+void start_recv_thread(chat_ctx_t* ctx)
+{
+#ifdef _WIN32
+    uintptr_t th = _beginthreadex(NULL, 0, recv_thread, ctx, 0, NULL);
+#else
+    pthread_t th;
+    pthread_create(&th, NULL, recv_thread, ctx);
+#endif
 }
 
 #endif

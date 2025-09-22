@@ -39,7 +39,9 @@
     #include <winsock2.h>
     #include <ws2tcpip.h>
     #include <windows.h>
+    #include <process.h>
     typedef SOCKET socket_t;
+    typedef unsigned __stdcall thread_t;
     #define close_socket closesocket
     #pragma comment(lib, "ws2_32.lib")
 #else
@@ -53,10 +55,13 @@
     #include <arpa/inet.h>
     #include <netdb.h>
     #include <unistd.h>
+    #include <pthread.h>
     typedef int socket_t;
+    typedef void* thread_t;
     #define INVALID_SOCKET (-1)
     #define SOCKET_ERROR (-1)
     #define close_socket close
+    #pragma comment(lib, "pthread")
 #endif
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
@@ -75,6 +80,13 @@ typedef struct message_t
     char* timestamp;
 } __attribute__((__packed__)) message_t;
 
+typedef struct chat_ctx_t
+{
+    socket_t sock;
+    char* username;
+} __attribute__((__packed__)) chat_ctx_t;
+
+void clear_screen(void);
 message_t* create_message(char* sender, char* msg);
 void print_message(message_t* msg);
 void free_message(message_t* msg);
@@ -86,5 +98,7 @@ ssize_t send_all(socket_t sock, const void* buffer, size_t len);
 ssize_t recv_all(socket_t sock, void* buffer, size_t len);
 bool send_message(socket_t sock, message_t* msg);
 message_t* recv_message(socket_t sock);
+thread_t recv_thread(void* arg);
+void start_recv_thread(chat_ctx_t* ctx);
 
 #endif
