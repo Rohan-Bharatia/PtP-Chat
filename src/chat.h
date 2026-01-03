@@ -73,6 +73,8 @@
 #include <ctype.h>
 #include <errno.h>
 
+#define USERNAME_MAX_LEN 64
+
 typedef struct message_t
 {
     char* sender;
@@ -83,8 +85,13 @@ typedef struct message_t
 typedef struct chat_ctx_t
 {
     socket_t sock;
-    char* username;
+    char username[USERNAME_MAX_LEN];
 } __attribute__((__packed__)) chat_ctx_t;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 void clear_screen(void);
 message_t* create_message(char* sender, char* msg);
@@ -100,5 +107,9 @@ bool send_message(socket_t sock, message_t* msg);
 message_t* recv_message(socket_t sock);
 thread_t recv_thread(void* arg);
 void start_recv_thread(chat_ctx_t* ctx);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
